@@ -1,0 +1,8 @@
+const labels={B3:'B3 地下3階',B2:'B2 地下2階',B1:'B1 地下1階','1F 本館':'1F 本館','2F 本館':'2F 本館'};
+const slugs={B3:'b3.html',B2:'b2.html',B1:'b1.html','1F 本館':'1f.html','2F 本館':'2f.html'};
+const floor=document.body.dataset.floor;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function nav(){return Object.keys(labels).map(f=>`<a class="${f===floor?'active':''}" href="${slugs[f]}">${labels[f]}</a>`).join('')}
+function card(w){const rc=w.rank?`<span class="rank ${w.rank.toLowerCase()}">${esc(w.rank)}</span>`:'';return `<article class="work"><div class="work-top"><span class="num">${esc(w.number)}</span><div><h2 class="work-title">${esc(w.title||'題名記載なし')}</h2><p class="artist">${esc(w.artist||'作者名記載なし')}</p></div>${rc}</div><div class="details"><b>${esc(w.museum||'所蔵先記載なし')}</b>${w.place?`<br>${esc(w.place)}`:''}${w.memo?`<br>メモ：${esc(w.memo)}`:''}</div></article>`}
+function render(){const q=document.querySelector('.search').value.trim().toLowerCase();const rank=document.querySelector('.rank-filter').value;const all=window.ARTWORKS.filter(w=>w.floor===floor);const rows=all.filter(w=>(!rank||w.rank===rank)&&(!q||[w.number,w.artist,w.title,w.museum,w.place,w.memo].join(' ').toLowerCase().includes(q)));document.querySelector('.count').innerHTML=`<strong>${rows.length}</strong> / ${all.length}作品`;document.querySelector('.works').innerHTML=rows.length?rows.map(card).join(''):'<p class="empty">条件に一致する作品はありません。</p>'}
+document.querySelector('.floor-nav').innerHTML=nav();document.querySelector('.page-title').textContent=labels[floor];document.querySelector('.search').addEventListener('input',render);document.querySelector('.rank-filter').addEventListener('change',render);render();
