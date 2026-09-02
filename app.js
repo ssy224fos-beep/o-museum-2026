@@ -12,6 +12,29 @@ function nav(){
   return Object.keys(labels).map(f=>`<a class="${f===floor?'active':''}" href="${slugs[f]}">${labels[f]}</a>`).join('');
 }
 
+function mapAsset(selectedFloor){
+  return {'B3':'assets/maps/b3.webp','B2':'assets/maps/b2.webp','B1':'assets/maps/b1.webp','1F 本館':'assets/maps/1f.webp','2F 本館':'assets/maps/2f.webp'}[selectedFloor]||'';
+}
+
+function mapOverlayMarkup(selectedFloor){
+  const label=labels[selectedFloor]||selectedFloor;
+  return `<button class="map-open" type="button" aria-haspopup="dialog">MAP</button><dialog class="map-dialog" aria-label="${esc(label)}のフロアマップ"><div class="map-panel"><div class="map-bar"><h2>${esc(label)} MAP</h2><button class="map-close" type="button" aria-label="マップを閉じる">×</button></div><div class="map-stage"><img src="${mapAsset(selectedFloor)}" alt="${esc(label)}のフロアマップ"></div></div></dialog>`;
+}
+
+function setMapOpen(dialog,opening){
+  if(opening)dialog.showModal();
+  else dialog.close();
+}
+
+function setupMap(){
+  if(!document.body.insertAdjacentHTML)return;
+  document.body.insertAdjacentHTML('beforeend',mapOverlayMarkup(floor));
+  const dialog=document.querySelector('.map-dialog');
+  document.querySelector('.map-open').addEventListener('click',()=>setMapOpen(dialog,true));
+  document.querySelector('.map-close').addEventListener('click',()=>setMapOpen(dialog,false));
+  dialog.addEventListener('click',event=>{if(event.target===dialog)setMapOpen(dialog,false)});
+}
+
 function roomNav(selectedFloor,selected=''){
   const rooms=[...new Set(window.ARTWORKS.filter(w=>w.floor===selectedFloor&&w.room).map(w=>w.room))].sort((a,b)=>Number(a)-Number(b));
   return `<button type="button" data-room="" class="${selected?'':'active'}">すべて</button>`+rooms.map(room=>`<button type="button" data-room="${esc(room)}"${room===selected?' class="active"':''}>展示室 ${esc(room)}</button>`).join('');
@@ -225,6 +248,7 @@ document.querySelector('.works').addEventListener('click',event=>{
   const summary=event.target.closest('.work-summary');
   if(summary)toggleCard(summary);
 });
+setupMap();
 setupEditor();
 render();
 if(typeof fetch==='function')loadLinks();

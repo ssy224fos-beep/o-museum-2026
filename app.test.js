@@ -131,3 +131,41 @@ test('作品詳細に管理者用のリンク編集ボタンを表示する', ()
   const html = vm.runInContext(`card({number:'10',title:'作品',artist:'作者',museum:'',place:'',memo:'',rank:'A',links:[]})`, context);
   assert.match(html, /class="edit-links"[^>]*data-number="10"/);
 });
+
+test('各フロアを専用のマップ画像へ対応させる', () => {
+  const {context} = loadApp();
+  const expected = {
+    B3:'assets/maps/b3.webp',
+    B2:'assets/maps/b2.webp',
+    B1:'assets/maps/b1.webp',
+    '1F 本館':'assets/maps/1f.webp',
+    '2F 本館':'assets/maps/2f.webp'
+  };
+  for (const [selectedFloor,path] of Object.entries(expected)) {
+    assert.equal(vm.runInContext(`mapAsset(${JSON.stringify(selectedFloor)})`, context), path);
+  }
+});
+
+test('現在のフロア用MAPボタンとオーバーレイを生成する', () => {
+  const {context} = loadApp();
+  const html = vm.runInContext(`mapOverlayMarkup('B3')`, context);
+  assert.match(html, /class="map-open"[^>]*>MAP<\/button>/);
+  assert.match(html, /<dialog class="map-dialog"/);
+  assert.match(html, /src="assets\/maps\/b3\.webp"/);
+  assert.match(html, /alt="B3 地下3階のフロアマップ"/);
+  assert.match(html, /class="map-close"/);
+});
+
+test('MAPオーバーレイを開閉する', () => {
+  const {context} = loadApp();
+  const dialog = {
+    opened:false,
+    showModal(){this.opened=true},
+    close(){this.opened=false}
+  };
+  const setMapOpen = vm.runInContext('setMapOpen', context);
+  setMapOpen(dialog,true);
+  assert.equal(dialog.opened,true);
+  setMapOpen(dialog,false);
+  assert.equal(dialog.opened,false);
+});
