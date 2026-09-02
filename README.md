@@ -15,9 +15,9 @@
 - サイト表示用データ: `data/artworks.js`
 - JSON版: `data/artworks.json`
 
-CSVの列順は `floor, number, artist, title, museum, place, memo, rank` です。
-日本語では「フロア、作品番号、作家名、題名、所蔵先美術館、所蔵都市/所蔵国、メモ、ランク」に対応します。
+CSVの列順は `floor, room, number, artist, title, museum, place, memo, rank` です。
+日本語では「フロア、展示室番号、作品番号、作家名、題名、所蔵先美術館、所蔵都市/所蔵国、メモ、ランク」に対応します。
 
-ランクは確認済みのS・A・Bを入力し、それ以外は空欄にしています。Sは赤、Aはゴールドで表示されます。Sランクの作品カードだけに、日本語版Wikipediaへのリンクが表示されます。
+選択中フロアの展示室番号がフロアボタンの下に表示され、展示室・ランク・キーワードを組み合わせて絞り込めます。ランクは確認済みのS・A・Bを入力し、それ以外は空欄にしています。Sは赤、Aはゴールドで表示されます。Sランクの作品カードだけに、日本語版Wikipediaへのリンクが表示されます。
 
 CSVを編集した後、Pythonを利用できる場合はこのフォルダーで `python generate_data.py` を実行すると、JS版とJSON版が自動更新されます。Pythonを利用しない場合は、`artworks.js` の同じ項目も合わせて編集してください。
