@@ -67,6 +67,15 @@ test('作品652はA、B2展示室41には最後の晩餐の修復前・修復後
   }
 });
 
+test('作品317はS、作品479はAランク', () => {
+  const {json, js} = loadRows();
+
+  for (const rows of [json, js]) {
+    assert.equal(rows.find(work => work.number === '317')?.rank, 'S');
+    assert.equal(rows.find(work => work.number === '479')?.rank, 'A');
+  }
+});
+
 test('残りの作品はDまたはEに分類され、未設定ランクが残らない', () => {
   const {json, js} = loadRows();
   const allowedRanks = new Set(['S', 'A', 'B', 'C', 'D', 'E']);
@@ -113,7 +122,7 @@ test('JSON版とJavaScript版の作品データが一致する', () => {
   assert.deepEqual(js, json);
 });
 
-test('CSV版にも作品652と最後の晩餐2作品が同期される', () => {
+test('CSV版にも変更内容が同期される', () => {
   const csv = fs.readFileSync(__dirname + '/data/artworks.csv', 'utf8');
   const lines = csv.trim().split(/\r?\n/);
 
@@ -121,4 +130,6 @@ test('CSV版にも作品652と最後の晩餐2作品が同期される', () => {
   assert.ok(lines.includes('B1,71,652,エドガー・ドガ,舞台の踊り子（エトワール）,オルセー美術館,パリ / フランス,,A'));
   assert.ok(lines.includes('B2,41,346-1,レオナルド・ダ・ヴィンチ,最後の晩餐（修復前）,サンタ・マリア・デッレ・グラーツィエ修道院 食堂,ミラノ / イタリア,,S'));
   assert.ok(lines.includes('B2,41,346-2,レオナルド・ダ・ヴィンチ,最後の晩餐（修復後）,サンタ・マリア・デッレ・グラーツィエ修道院 食堂,ミラノ / イタリア,,S'));
+  assert.ok(lines.includes('B2,39,317,ピーテル・ブリューゲル（父）,バベルの塔,ウィーン美術史美術館,ウィーン / オーストリア,,S'));
+  assert.ok(lines.includes('B2,56,479,ジュゼッペ・アルチンボルド,夏（「四季」より）,ウィーン美術史美術館,ウィーン / オーストリア,,A'));
 });
