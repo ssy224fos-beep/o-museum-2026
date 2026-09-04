@@ -41,6 +41,31 @@ test('作品612・705・1081は全てAランク', () => {
   }
 });
 
+test('残りの作品はDまたはEに分類され、未設定ランクが残らない', () => {
+  const {json, js} = loadRows();
+  const allowedRanks = new Set(['S', 'A', 'B', 'C', 'D', 'E']);
+
+  assert.equal(json.filter(work => !allowedRanks.has(work.rank)).length, 0, 'JSON');
+  assert.equal(js.filter(work => !allowedRanks.has(work.rank)).length, 0, 'JS');
+});
+
+test('美術史上重要な作例をD、専門性の高い作例をEに分類する', () => {
+  const {json, js} = loadRows();
+  const expected = new Map([
+    ['8', 'D'],     // 《鳥占い師の墓》
+    ['137', 'D'],   // 《聖マルタン聖堂壁画》
+    ['138', 'D'],   // 《聖ニコラオス・オルファノス聖堂壁画》
+    ['11', 'E'],    // 《コリントス式オルペ》
+    ['12', 'E'],    // 《動物のパラダイス》
+    ['14', 'E'],    // 《死者の周りを踊る女たち》
+  ]);
+
+  for (const [number, rank] of expected) {
+    assert.equal(json.find(work => work.number === number)?.rank, rank, `JSON ${number}`);
+    assert.equal(js.find(work => work.number === number)?.rank, rank, `JS ${number}`);
+  }
+});
+
 test('既存のS・A・Bランクは変更されない', () => {
   const {json} = loadRows();
   const expected = new Map([
