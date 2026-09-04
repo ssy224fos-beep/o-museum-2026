@@ -5,7 +5,7 @@ const fs = require('node:fs');
 
 function loadApp() {
   const elements = Object.fromEntries(
-    ['.search','.rank-filter','.count','.works','.floor-nav','.room-nav','.page-title'].map(k => [k, {
+    ['.search','.rank-filter','.youtube-filter','.count','.works','.floor-nav','.room-nav','.page-title'].map(k => [k, {
       value:'', innerHTML:'', textContent:'',
       addEventListener(type, handler){ this[type]=handler; },
       insertAdjacentHTML(position,html){ this.inserted={position,html}; }
@@ -54,6 +54,55 @@ test('展示室・ランク・キーワードを組み合わせて絞り込む',
   context.window.ARTWORKS = works;
   const rows = vm.runInContext(`filterWorks('B3','2','S','作品B')`, context);
   assert.deepEqual(JSON.parse(JSON.stringify(rows.map(w=>w.number))), ['2']);
+});
+
+test('全フロアからYouTubeリンクの有無で絞り込む', () => {
+  const {context} = loadApp();
+  const works = [
+    {floor:'B3',room:'1',rank:'S',title:'作品A',artist:'作者',number:'1',museum:'',place:'',memo:'',links:[{url:'https://youtu.be/abc'}]},
+    {floor:'B2',room:'28',rank:'A',title:'作品B',artist:'作者',number:'2',museum:'',place:'',memo:'',links:[{url:'https://example.com'}]},
+    {floor:'1F 本館',room:'87',rank:'C',title:'作品C',artist:'作者',number:'3',museum:'',place:'',memo:'',links:[]}
+  ];
+  context.window.ARTWORKS = works;
+
+  const withYoutube = vm.runInContext(`filterWorks('ALL','','','','yes')`, context);
+  const withoutYoutube = vm.runInContext(`filterWorks('ALL','','','','no')`, context);
+  assert.deepEqual(JSON.parse(JSON.stringify(withYoutube.map(w=>w.number))), ['1']);
+  assert.deepEqual(JSON.parse(JSON.stringify(withoutYoutube.map(w=>w.number))), ['2','3']);
+});
+
+test('フロアナビの先頭に「すべて」を表示し、選択中にする', () => {
+  const {context} = loadApp();
+  const html = vm.runInContext(`nav('ALL')`, context);
+  assert.match(html, /^<a class="active" href="all\.html">すべて<\/a>/);
+  assert.equal((html.match(/<a /g)||[]).length, 6);
+});
+
+test('全フロア表示では展示室ナビとMAPを表示しない', () => {
+  const {context} = loadApp();
+  assert.equal(vm.runInContext(`roomNav('ALL')`, context), '');
+  assert.equal(vm.runInContext(`mapOverlayMarkup('ALL')`, context), '');
+});
+
+test('C・D・Eにも判別可能なランクアイコンを表示する', () => {
+  const {context} = loadApp();
+  for (const rank of ['C','D','E']) {
+    const html = vm.runInContext(`rankBadge('${rank}')`, context);
+    assert.match(html, new RegExp(`class="rank ${rank.toLowerCase()}"`));
+    assert.match(html, new RegExp(`aria-label="ランク${rank}"`));
+    assert.match(html, new RegExp(`>${rank}<\\/span>`));
+  }
+});
+
+test('全フロアページとYouTubeフィルターを各一覧ページに備える', () => {
+  const pageNames = ['all.html','b3.html','b2.html','b1.html','1f.html','2f.html'];
+  for (const pageName of pageNames) {
+    const html = fs.readFileSync(__dirname + '/' + pageName, 'utf8');
+    assert.match(html, /class="youtube-filter"/, pageName);
+    assert.match(html, /value="yes">YouTubeあり/, pageName);
+    assert.match(html, /value="no">YouTubeなし/, pageName);
+  }
+  assert.match(fs.readFileSync(__dirname + '/all.html', 'utf8'), /data-floor="ALL"/);
 });
 
 test('作品を開くと所蔵先を表示し、もう一度押すと閉じる', () => {

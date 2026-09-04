@@ -1,5 +1,5 @@
-const labels={B3:'B3 地下3階',B2:'B2 地下2階',B1:'B1 地下1階','1F 本館':'1F 本館','2F 本館':'2F 本館'};
-const slugs={B3:'b3.html',B2:'b2.html',B1:'b1.html','1F 本館':'1f.html','2F 本館':'2f.html'};
+const labels={ALL:'すべて',B3:'B3 地下3階',B2:'B2 地下2階',B1:'B1 地下1階','1F 本館':'1F 本館','2F 本館':'2F 本館'};
+const slugs={ALL:'all.html',B3:'b3.html',B2:'b2.html',B1:'b1.html','1F 本館':'1f.html','2F 本館':'2f.html'};
 const githubFileUrl='https://api.github.com/repos/ssy224fos-beep/o-museum-2026/contents/data/links.json';
 const floor=document.body.dataset.floor;
 let selectedRoom='';
@@ -8,8 +8,8 @@ let editingNumber='';
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-function nav(){
-  return Object.keys(labels).map(f=>`<a class="${f===floor?'active':''}" href="${slugs[f]}">${labels[f]}</a>`).join('');
+function nav(selectedFloor=floor){
+  return Object.keys(labels).map(f=>`<a class="${f===selectedFloor?'active':''}" href="${slugs[f]}">${labels[f]}</a>`).join('');
 }
 
 function mapAsset(selectedFloor){
@@ -17,8 +17,10 @@ function mapAsset(selectedFloor){
 }
 
 function mapOverlayMarkup(selectedFloor){
+  const asset=mapAsset(selectedFloor);
+  if(!asset)return '';
   const label=labels[selectedFloor]||selectedFloor;
-  return `<button class="map-open" type="button" aria-haspopup="dialog">MAP</button><dialog class="map-dialog" aria-label="${esc(label)}のフロアマップ"><div class="map-panel"><div class="map-bar"><h2>${esc(label)} MAP</h2><button class="map-close" type="button" aria-label="マップを閉じる">×</button></div><div class="map-stage"><img src="${mapAsset(selectedFloor)}" alt="${esc(label)}のフロアマップ"></div></div></dialog>`;
+  return `<button class="map-open" type="button" aria-haspopup="dialog">MAP</button><dialog class="map-dialog" aria-label="${esc(label)}のフロアマップ"><div class="map-panel"><div class="map-bar"><h2>${esc(label)} MAP</h2><button class="map-close" type="button" aria-label="マップを閉じる">×</button></div><div class="map-stage"><img src="${asset}" alt="${esc(label)}のフロアマップ"></div></div></dialog>`;
 }
 
 function setMapOpen(dialog,opening){
@@ -27,7 +29,7 @@ function setMapOpen(dialog,opening){
 }
 
 function setupMap(){
-  if(!document.body.insertAdjacentHTML)return;
+  if(!document.body.insertAdjacentHTML||!mapAsset(floor))return;
   document.body.insertAdjacentHTML('beforeend',mapOverlayMarkup(floor));
   const dialog=document.querySelector('.map-dialog');
   document.querySelector('.map-open').addEventListener('click',()=>setMapOpen(dialog,true));
@@ -36,13 +38,17 @@ function setupMap(){
 }
 
 function roomNav(selectedFloor,selected=''){
+  if(selectedFloor==='ALL')return '';
   const rooms=[...new Set(window.ARTWORKS.filter(w=>w.floor===selectedFloor&&w.room).map(w=>w.room))].sort((a,b)=>Number(a)-Number(b));
   return `<button type="button" data-room="" class="${selected?'':'active'}">すべて</button>`+rooms.map(room=>`<button type="button" data-room="${esc(room)}"${room===selected?' class="active"':''}>展示室 ${esc(room)}</button>`).join('');
 }
 
-function filterWorks(selectedFloor,room,rank,query){
+function filterWorks(selectedFloor,room,rank,query,youtube=''){
   const q=query.trim().toLowerCase();
-  return window.ARTWORKS.filter(w=>w.floor===selectedFloor&&(!room||w.room===room)&&(!rank||w.rank===rank)&&(!q||[w.number,w.artist,w.title,w.museum,w.place,w.memo].join(' ').toLowerCase().includes(q)));
+  return window.ARTWORKS.filter(w=>{
+    const hasYoutube=(w.links||[]).some(link=>linkKind(link.url)==='youtube');
+    return (selectedFloor==='ALL'||w.floor===selectedFloor)&&(!room||w.room===room)&&(!rank||w.rank===rank)&&(!q||[w.number,w.artist,w.title,w.museum,w.place,w.memo].join(' ').toLowerCase().includes(q))&&(!youtube||(youtube==='yes'?hasYoutube:!hasYoutube));
+  });
 }
 
 function safeUrl(value){
@@ -104,6 +110,10 @@ function linkBadges(w){
   }).join('');
 }
 
+function rankBadge(rank){
+  return rank?`<span class="rank ${rank.toLowerCase()}" aria-label="ランク${esc(rank)}">${esc(rank)}</span>`:'';
+}
+
 function wikiLink(w){
   if(w.rank!=='S')return '';
   const query=encodeURIComponent(`${w.title} ${w.artist}`);
@@ -118,14 +128,15 @@ function toggleCard(summary){
 }
 
 function card(w){
-  const rc=w.rank?`<span class="rank ${w.rank.toLowerCase()}">${esc(w.rank)}</span>`:'';
+  const rc=rankBadge(w.rank);
   return `<article class="work"><button class="work-summary" type="button" aria-expanded="false"><span class="num">${esc(w.number)}</span><span class="work-heading"><span class="work-title">${esc(w.title||'題名記載なし')}</span><span class="artist">${esc(w.artist||'作者名記載なし')}</span></span><span class="chevron" aria-hidden="true">⌄</span></button><span class="work-icons">${rc}${linkBadges(w)}</span><div class="details" hidden><b>${esc(w.museum||'所蔵先記載なし')}</b>${w.place?`<br>${esc(w.place)}`:''}${w.memo?`<br>メモ：${esc(w.memo)}`:''}${wikiLink(w)}<button class="edit-links" type="button" data-number="${esc(w.number)}">管理者用：リンクを編集</button></div></article>`;
 }
 
 function render(){
   const rank=document.querySelector('.rank-filter').value;
-  const all=window.ARTWORKS.filter(w=>w.floor===floor);
-  const rows=filterWorks(floor,selectedRoom,rank,document.querySelector('.search').value);
+  const youtube=document.querySelector('.youtube-filter').value;
+  const all=floor==='ALL'?window.ARTWORKS:window.ARTWORKS.filter(w=>w.floor===floor);
+  const rows=filterWorks(floor,selectedRoom,rank,document.querySelector('.search').value,youtube);
   document.querySelector('.count').innerHTML=`<strong>${rows.length}</strong> / ${all.length}作品`;
   document.querySelector('.works').innerHTML=rows.length?rows.map(card).join(''):'<p class="empty">条件に一致する作品はありません。</p>';
 }
@@ -231,11 +242,14 @@ async function saveEditor(event){
 const floorNavElement=document.querySelector('.floor-nav');
 floorNavElement.innerHTML=nav();
 floorNavElement.insertAdjacentHTML('afterend','<nav class="room-nav" aria-label="展示室"></nav>');
-document.querySelector('.room-nav').innerHTML=roomNav(floor);
+const roomNavElement=document.querySelector('.room-nav');
+roomNavElement.innerHTML=roomNav(floor);
+roomNavElement.hidden=floor==='ALL';
 document.querySelector('.page-title').textContent=labels[floor];
 document.querySelector('.search').addEventListener('input',render);
 document.querySelector('.rank-filter').addEventListener('change',render);
-document.querySelector('.room-nav').addEventListener('click',event=>{
+document.querySelector('.youtube-filter').addEventListener('change',render);
+roomNavElement.addEventListener('click',event=>{
   const button=event.target.closest('button[data-room]');
   if(!button)return;
   selectedRoom=button.dataset.room;
