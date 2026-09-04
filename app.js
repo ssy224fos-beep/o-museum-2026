@@ -115,7 +115,7 @@ function rankBadge(rank){
 }
 
 function wikiLink(w){
-  if(w.rank!=='S')return '';
+  if(!['S','A'].includes(w.rank))return '';
   const query=encodeURIComponent(`${w.title} ${w.artist}`);
   return `<a class="wiki" href="https://ja.wikipedia.org/wiki/Special:Search?search=${query}&go=Go" target="_blank" rel="noopener noreferrer">Wikipediaで見る <span aria-hidden="true">↗</span></a>`;
 }

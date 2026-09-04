@@ -30,6 +30,17 @@ test('一覧では詳細を隠し、作品全体を開くボタンとして表�
   assert.match(html, /Wikipediaで見る/);
 });
 
+test('WikipediaボタンはS・Aランクだけに表示する', () => {
+  const {context} = loadApp();
+  const s = vm.runInContext(`wikiLink({title:'作品S',artist:'作者',rank:'S'})`, context);
+  const a = vm.runInContext(`wikiLink({title:'作品A',artist:'作者',rank:'A'})`, context);
+  const b = vm.runInContext(`wikiLink({title:'作品B',artist:'作者',rank:'B'})`, context);
+
+  assert.match(s, /Wikipediaで見る/);
+  assert.match(a, /Wikipediaで見る/);
+  assert.equal(b, '');
+});
+
 test('選択中フロアに存在する展示室番号だけをボタン表示する', () => {
   const {context} = loadApp();
   const works = [
