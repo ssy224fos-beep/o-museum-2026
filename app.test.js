@@ -105,6 +105,12 @@ test('全フロアページとYouTubeフィルターを各一覧ページに備�
   assert.match(fs.readFileSync(__dirname + '/all.html', 'utf8'), /data-floor="ALL"/);
 });
 
+test('トップページの作品数は最後の晩餐2作品を含む', () => {
+  const index = fs.readFileSync(__dirname + '/index.html', 'utf8');
+  assert.match(index, /全フロア・1,083作品/);
+  assert.match(index, /地下2階・246作品/);
+});
+
 test('作品を開くと所蔵先を表示し、もう一度押すと閉じる', () => {
   const {context} = loadApp();
   const details = {hidden:true};
