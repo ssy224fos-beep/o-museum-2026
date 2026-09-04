@@ -23,7 +23,6 @@ test('未設定作品から選定した作品がCランクとして登録され�
     '3',    // エル・グレコ《聖アンデレと聖フランチェスコ》
     '245',  // ジョヴァンニ・ベッリーニ《受胎告知》
     '386',  // レンブラント《瞑想する学者》
-    '612',  // モネ《ラ・ジャポネーズ》
     '823',  // ピカソ《自画像》
     '930',  // ウォーホル《10の緑色の惨事》
   ];
@@ -31,6 +30,14 @@ test('未設定作品から選定した作品がCランクとして登録され�
   for (const number of representativeNumbers) {
     assert.equal(json.find(work => work.number === number)?.rank, 'C', `JSON ${number}`);
     assert.equal(js.find(work => work.number === number)?.rank, 'C', `JS ${number}`);
+  }
+});
+
+test('作品612・705・1081は全てAランク', () => {
+  const {json, js} = loadRows();
+  for (const number of ['612', '705', '1081']) {
+    assert.equal(json.find(work => work.number === number)?.rank, 'A', `JSON ${number}`);
+    assert.equal(js.find(work => work.number === number)?.rank, 'A', `JS ${number}`);
   }
 });
 
