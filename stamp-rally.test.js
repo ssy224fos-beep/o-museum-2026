@@ -82,10 +82,11 @@ test('画像データはゲルニカ以外のSランク作品を網羅する', (
   }
 });
 
-test('作品1は最後の審判、作品463はRijksmuseum版画像を使う', () => {
+test('作品1・463・1088は指定した絵画画像を使う', () => {
   const context = { window: {} };
   vm.createContext(context);
   vm.runInContext(fs.readFileSync(__dirname + '/data/stamp-images.js', 'utf8'), context);
   assert.equal(context.window.STAMP_IMAGES['1'].file, 'Last Judgement by Michelangelo.jpg');
-  assert.equal(context.window.STAMP_IMAGES['463'].file, 'Vermeer, Johannes - Woman reading a letter - ca. 1662-1663.jpg');
+  assert.equal(context.window.STAMP_IMAGES['463'].file, 'Jan Vermeer - Girl Reading a Letter at an Open Window.JPG');
+  assert.equal(context.window.STAMP_IMAGES['1088'].file, 'Vincent Willem van Gogh - Cafe Terrace at Night (Yorck).jpg');
 });
