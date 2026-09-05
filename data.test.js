@@ -41,6 +41,18 @@ test('作品612・705・1081は全てAランク', () => {
   }
 });
 
+test('作品347・348は全データ形式でAランク', () => {
+  const {json, js} = loadRows();
+  for (const number of ['347', '348']) {
+    assert.equal(json.find(work => work.number === number)?.rank, 'A', `JSON ${number}`);
+    assert.equal(js.find(work => work.number === number)?.rank, 'A', `JS ${number}`);
+  }
+
+  const csv = fs.readFileSync(__dirname + '/data/artworks.csv', 'utf8');
+  assert.match(csv, /^B2,41,347,.*,,A$/m);
+  assert.match(csv, /^B2,41,348,.*,,A$/m);
+});
+
 test('作品652はA、B2展示室41には最後の晩餐の修復前・修復後が登録される', () => {
   const {json, js} = loadRows();
 
