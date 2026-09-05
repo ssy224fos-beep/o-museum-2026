@@ -60,6 +60,47 @@ test('印刷ボタンの操作中に同期的に印刷画面を開く', () => {
   assert.equal(result, undefined);
 });
 
+test('スタンプ欄をブラウザ上で押した状態として表示する', () => {
+  const context = loadRally();
+  const work = `{floor:'B2',room:'30',number:'292',title:'ヴィーナスの誕生',artist:'ボッティチェッリ',rank:'S'}`;
+  const image = `{file:'Birth of Venus Botticelli.jpg',asset:'assets/stamps/292.jpg',license:'Public domain'}`;
+  const empty = vm.runInContext(`stampCard(${work}, ${image}, false)`, context);
+  const collected = vm.runInContext(`stampCard(${work}, ${image}, true)`, context);
+
+  assert.match(empty, /<button[^>]*class="stamp-space"[^>]*data-number="292"[^>]*aria-pressed="false"/);
+  assert.match(empty, />STAMP<\/span>/);
+  assert.match(collected, /class="stamp-space is-collected"/);
+  assert.match(collected, /aria-pressed="true"/);
+  assert.match(collected, />GET!<\/span>/);
+});
+
+test('スタンプ状態を切り替え、獲得済みと未獲得で絞り込む', () => {
+  const context = loadRally();
+  context.works = [
+    {number:'1',rank:'S'}, {number:'2',rank:'S'}, {number:'3',rank:'S'}
+  ];
+  const state = vm.runInContext(`toggleStampState({}, '2')`, context);
+  const collected = vm.runInContext(`filterStampWorks(works, ${JSON.stringify(state)}, 'collected')`, context);
+  const remaining = vm.runInContext(`filterStampWorks(works, ${JSON.stringify(state)}, 'uncollected')`, context);
+  const cleared = vm.runInContext(`toggleStampState(${JSON.stringify(state)}, '2')`, context);
+
+  assert.deepEqual(JSON.parse(JSON.stringify(state)), {'2':true});
+  assert.deepEqual(JSON.parse(JSON.stringify(collected.map(work => work.number))), ['2']);
+  assert.deepEqual(JSON.parse(JSON.stringify(remaining.map(work => work.number))), ['1','3']);
+  assert.deepEqual(JSON.parse(JSON.stringify(cleared)), {});
+});
+
+test('保存済み状態を安全に読み込み、進捗を計算する', () => {
+  const context = loadRally();
+  const valid = vm.runInContext(`parseStampState('{"1":true,"2":false,"x":"yes"}')`, context);
+  const invalid = vm.runInContext(`parseStampState('broken json')`, context);
+  const progress = vm.runInContext(`stampProgress([{number:'1'},{number:'2'},{number:'3'}], {'1':true,'3':true})`, context);
+
+  assert.deepEqual(JSON.parse(JSON.stringify(valid)), {'1':true});
+  assert.deepEqual(JSON.parse(JSON.stringify(invalid)), {});
+  assert.deepEqual(JSON.parse(JSON.stringify(progress)), {done:2,total:3,percent:67});
+});
+
 test('画像がない作品には印刷可能な代替表示を出す', () => {
   const context = loadRally();
   const html = vm.runInContext(`stampCard({
