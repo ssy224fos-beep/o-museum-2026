@@ -1,1 +1,44 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#315b54"><title>Sランク スタンプラリー</title><link rel="stylesheet" href="stamp-rally.css"></head><body><header class="rally-toolbar"><div><h1>Sランク スタンプラリー</h1><p class="rally-count">読み込み中…</p></div><div class="toolbar-actions"><a href="index.html">作品一覧へ</a><a href="stamp-credits.html">画像出典</a><button class="print-button" type="button">印刷する</button></div></header><p class="screen-note">スタンプ欄をタップしてSランク作品を集めましょう。記録はこのブラウザに保存されます。印刷はA4縦・倍率100%を推奨します。</p><section class="browser-play" aria-label="スタンプラリーの進捗"><div class="progress-head"><strong>スタンプ獲得状況</strong><span class="progress-text">0 / 36（0%）</span></div><div class="progress-track" role="progressbar" aria-label="スタンプ獲得率"><span class="progress-fill"></span></div><p class="completion-message" hidden>全作品達成！ おめでとうございます！</p><div class="play-actions"><div class="stamp-filters" aria-label="獲得状態で絞り込み"><button type="button" class="stamp-filter active" data-filter="all" aria-pressed="true">すべて</button><button type="button" class="stamp-filter" data-filter="uncollected" aria-pressed="false">未獲得</button><button type="button" class="stamp-filter" data-filter="collected" aria-pressed="false">獲得済み</button></div><button type="button" class="reset-stamps">記録をリセット</button></div></section><main class="rally-root" aria-live="polite"></main><script src="data/artworks.js"></script><script src="data/stamp-images.js"></script><script src="stamp-rally.js"></script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#315b54">
+  <title>Sランク スタンプラリー</title>
+  <link rel="stylesheet" href="stamp-rally.css">
+</head>
+<body>
+  <header class="rally-toolbar">
+    <a class="back-to-list" href="index.html">← 作品一覧</a>
+    <div class="rally-heading">
+      <h1>Sランク スタンプラリー</h1>
+      <p class="rally-count">読み込み中…</p>
+    </div>
+    <div class="toolbar-actions">
+      <a href="stamp-credits.html">画像出典</a>
+      <button class="print-button" type="button">印刷する</button>
+    </div>
+  </header>
+  <p class="screen-note">スタンプ欄をタップしてSランク作品を集めましょう。記録はこのブラウザに保存されます。印刷はA4縦・倍率100%を推奨します。</p>
+  <section class="browser-play" aria-label="スタンプラリーの進捗">
+    <div class="progress-head">
+      <strong>スタンプ獲得状況</strong>
+      <span class="progress-text">0 / 36（0%）</span>
+    </div>
+    <div class="progress-track" role="progressbar" aria-label="スタンプ獲得率"><span class="progress-fill"></span></div>
+    <p class="completion-message" hidden>全作品達成！ おめでとうございます！</p>
+    <div class="play-actions">
+      <div class="stamp-filters" aria-label="獲得状態で絞り込み">
+        <button type="button" class="stamp-filter active" data-filter="all" aria-pressed="true">すべて</button>
+        <button type="button" class="stamp-filter" data-filter="uncollected" aria-pressed="false">未獲得</button>
+        <button type="button" class="stamp-filter" data-filter="collected" aria-pressed="false">獲得済み</button>
+      </div>
+      <button type="button" class="reset-stamps">記録をリセット</button>
+    </div>
+  </section>
+  <main class="rally-root" aria-live="polite"></main>
+  <script src="data/artworks.js"></script>
+  <script src="data/stamp-images.js"></script>
+  <script src="stamp-rally.js"></script>
+</body>
+</html>

@@ -17,6 +17,13 @@ test('スタンプラリー用ファイルとトップページの導線があ�
   assert.match(fs.readFileSync(__dirname + '/index.html', 'utf8'), /href="stamp-rally\.html"/);
 });
 
+test('固定ヘッダーに常時表示する作品一覧への戻るボタンがある', () => {
+  const html = fs.readFileSync(__dirname + '/stamp-rally.html', 'utf8');
+  const header = html.match(/<header class="rally-toolbar">([\s\S]*?)<\/header>/)?.[1] || '';
+  assert.match(header, /<a class="back-to-list" href="index\.html">← 作品一覧<\/a>/);
+  assert.doesNotMatch(header, /<div class="toolbar-actions">[\s\S]*class="back-to-list"/);
+});
+
 test('Sランク作品だけを展示順のまま抽出する', () => {
   const context = loadRally();
   context.window.ARTWORKS = [
