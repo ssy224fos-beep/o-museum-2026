@@ -41,8 +41,23 @@ test('カードに指定情報・サムネイル・スタンプ欄を表示す�
   assert.match(html, /class="art-thumb"/);
   assert.match(html, /src="assets\/stamps\/292\.jpg"/);
   assert.doesNotMatch(html, /src="https:\/\//);
+  assert.doesNotMatch(html, /loading="lazy"/);
   assert.match(html, /alt="ヴィーナスの誕生のサムネイル"/);
   assert.match(html, /class="stamp-space"/);
+});
+
+test('印刷ボタンの操作中に同期的に印刷画面を開く', () => {
+  const context = loadRally();
+  let printed = false;
+  context.document = {
+    querySelectorAll: () => [{complete:false, addEventListener(){}}]
+  };
+  context.window.print = () => { printed = true; };
+
+  const result = vm.runInContext(`printRally({disabled:false,textContent:'印刷する'})`, context);
+
+  assert.equal(printed, true);
+  assert.equal(result, undefined);
 });
 
 test('画像がない作品には印刷可能な代替表示を出す', () => {
