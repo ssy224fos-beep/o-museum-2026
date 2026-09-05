@@ -47,7 +47,7 @@ function filterWorks(selectedFloor,room,rank,query,youtube=''){
   const q=query.trim().toLowerCase();
   return window.ARTWORKS.filter(w=>{
     const hasYoutube=(w.links||[]).some(link=>linkKind(link.url)==='youtube');
-    return (selectedFloor==='ALL'||w.floor===selectedFloor)&&(!room||w.room===room)&&(!rank||w.rank===rank)&&(!q||[w.number,w.artist,w.title,w.museum,w.place,w.memo].join(' ').toLowerCase().includes(q))&&(!youtube||(youtube==='yes'?hasYoutube:!hasYoutube));
+    return (selectedFloor==='ALL'||w.floor===selectedFloor)&&(!room||w.room===room)&&(!rank||(rank==='SA'?['S','A'].includes(w.rank):w.rank===rank))&&(!q||[w.number,w.artist,w.title,w.museum,w.place,w.memo].join(' ').toLowerCase().includes(q))&&(!youtube||(youtube==='yes'?hasYoutube:!hasYoutube));
   });
 }
 

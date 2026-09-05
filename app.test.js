@@ -67,6 +67,20 @@ test('展示室・ランク・キーワードを組み合わせて絞り込む',
   assert.deepEqual(JSON.parse(JSON.stringify(rows.map(w=>w.number))), ['2']);
 });
 
+test('「S と A」でS・A両方の作品だけを絞り込む', () => {
+  const {context} = loadApp();
+  context.window.ARTWORKS = [
+    {floor:'B3',room:'2',rank:'S',title:'作品S',artist:'作者',number:'1',museum:'',place:'',memo:''},
+    {floor:'B3',room:'2',rank:'A',title:'作品A',artist:'作者',number:'2',museum:'',place:'',memo:''},
+    {floor:'B3',room:'2',rank:'B',title:'作品B',artist:'作者',number:'3',museum:'',place:'',memo:''},
+    {floor:'B2',room:'28',rank:'S',title:'別フロア',artist:'作者',number:'4',museum:'',place:'',memo:''}
+  ];
+
+  const rows = vm.runInContext(`filterWorks('B3','2','SA','')`, context);
+
+  assert.deepEqual(JSON.parse(JSON.stringify(rows.map(w=>w.number))), ['1','2']);
+});
+
 test('全フロアからYouTubeリンクの有無で絞り込む', () => {
   const {context} = loadApp();
   const works = [
@@ -114,6 +128,14 @@ test('全フロアページとYouTubeフィルターを各一覧ページに備�
     assert.match(html, /value="no">YouTubeなし/, pageName);
   }
   assert.match(fs.readFileSync(__dirname + '/all.html', 'utf8'), /data-floor="ALL"/);
+});
+
+test('各作品一覧ページで「S と A」を選択できる', () => {
+  const pageNames = ['all.html','b3.html','b2.html','b1.html','1f.html','2f.html'];
+  for (const pageName of pageNames) {
+    const html = fs.readFileSync(__dirname + '/' + pageName, 'utf8');
+    assert.match(html, /<option value="SA">S と A<\/option>/, pageName);
+  }
 });
 
 test('トップページの作品数は最後の晩餐2作品を含む', () => {
