@@ -81,3 +81,11 @@ test('画像データはゲルニカ以外のSランク作品を網羅する', (
     assert.equal(image.license, 'Public domain');
   }
 });
+
+test('作品1は最後の審判、作品463はRijksmuseum版画像を使う', () => {
+  const context = { window: {} };
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(__dirname + '/data/stamp-images.js', 'utf8'), context);
+  assert.equal(context.window.STAMP_IMAGES['1'].file, 'Last Judgement by Michelangelo.jpg');
+  assert.equal(context.window.STAMP_IMAGES['463'].file, 'Vermeer, Johannes - Woman reading a letter - ca. 1662-1663.jpg');
+});

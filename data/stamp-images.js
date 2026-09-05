@@ -1,5 +1,5 @@
 window.STAMP_IMAGES = {
-  '1': {file:'Michelangelo - Sistine Chapel ceiling - 1st bay.jpg', license:'Public domain'},
+  '1': {file:'Last Judgement by Michelangelo.jpg', license:'Public domain'},
   '292': {file:'Birth of Venus Botticelli.jpg', license:'Public domain'},
   '293': {file:'Botticelli-primavera.jpg', license:'Public domain'},
   '257': {file:'Raphael School of Athens.jpg', license:'Public domain'},
@@ -10,7 +10,7 @@ window.STAMP_IMAGES = {
   '344': {file:'Mona Lisa.jpg', license:'Public domain'},
   '390': {file:'The Night Watch.jpg', license:'Public domain'},
   '426': {file:'Las Meninas by Diego Velázquez.jpg', license:'Public domain'},
-  '463': {file:'Johannes Vermeer - Woman in Blue Reading a Letter - WGA24657.jpg', license:'Public domain'},
+  '463': {file:'Vermeer, Johannes - Woman reading a letter - ca. 1662-1663.jpg', license:'Public domain'},
   '464': {file:'Vermeer - The Milkmaid.jpg', license:'Public domain'},
   '1060': {file:'Johannes Vermeer - Girl with a Pearl Earring - 670 - Mauritshuis.jpg', license:'Public domain'},
   '1086': {file:'Johannes Vermeer - The Geographer - Google Art Project.jpg', license:'Public domain'},
