@@ -32,13 +32,15 @@ test('カードに指定情報・サムネイル・スタンプ欄を表示す�
   const context = loadRally();
   const html = vm.runInContext(`stampCard({
     floor:'B2', room:'30', number:'292', title:'ヴィーナスの誕生', artist:'ボッティチェッリ', rank:'S'
-  }, {file:'Birth of Venus Botticelli.jpg', license:'Public domain'})`, context);
+  }, {file:'Birth of Venus Botticelli.jpg', asset:'assets/stamps/292.jpg', license:'Public domain'})`, context);
   assert.match(html, /B2/);
   assert.match(html, /展示室 30/);
   assert.match(html, /作品番号 292/);
   assert.match(html, /ヴィーナスの誕生/);
   assert.match(html, /ボッティチェッリ/);
   assert.match(html, /class="art-thumb"/);
+  assert.match(html, /src="assets\/stamps\/292\.jpg"/);
+  assert.doesNotMatch(html, /src="https:\/\//);
   assert.match(html, /alt="ヴィーナスの誕生のサムネイル"/);
   assert.match(html, /class="stamp-space"/);
 });
@@ -74,6 +76,8 @@ test('画像データはゲルニカ以外のSランク作品を網羅する', (
   assert.equal(dataContext.window.STAMP_IMAGES['951'], undefined);
   for (const image of Object.values(dataContext.window.STAMP_IMAGES)) {
     assert.ok(image.file);
+    assert.match(image.asset, /^assets\/stamps\/[^/]+\.jpg$/);
+    assert.equal(fs.existsSync(__dirname + '/' + image.asset), true, image.asset);
     assert.equal(image.license, 'Public domain');
   }
 });

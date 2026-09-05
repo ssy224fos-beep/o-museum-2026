@@ -18,7 +18,7 @@ function commonsThumb(file) {
 
 function stampCard(work, image) {
   const thumbnail = image
-    ? `<a class="art-thumb" href="${commonsFilePage(image.file)}" target="_blank" rel="noopener noreferrer" aria-label="画像の出典を開く"><img src="${commonsThumb(image.file)}" alt="${esc(work.title)}のサムネイル" loading="lazy" crossorigin="anonymous"></a>`
+    ? `<a class="art-thumb" href="${commonsFilePage(image.file)}" target="_blank" rel="noopener noreferrer" aria-label="画像の出典を開く"><img src="${esc(image.asset)}" alt="${esc(work.title)}のサムネイル" loading="lazy"></a>`
     : `<div class="art-thumb placeholder" role="img" aria-label="${esc(work.title)}は画像掲載なし"><span>画像掲載なし</span></div>`;
   return `<article class="stamp-card">
     ${thumbnail}

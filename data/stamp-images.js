@@ -35,3 +35,7 @@ window.STAMP_IMAGES = {
   '736': {file:'Jacques-Louis David, The Coronation of Napoleon.jpg', license:'Public domain'},
   '813': {file:'Edvard Munch - The Scream - Google Art Project.jpg', license:'Public domain'}
 };
+
+for (const [number, image] of Object.entries(window.STAMP_IMAGES)) {
+  image.asset = `assets/stamps/${number}.jpg`;
+}
